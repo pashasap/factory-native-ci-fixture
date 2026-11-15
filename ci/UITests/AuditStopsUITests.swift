@@ -13,7 +13,7 @@ final class AuditStopsUITests: XCTestCase {
             app.launchArguments = ["-auditStop", stop.id]
             app.launch()
             let root = app.descendants(matching: .any).matching(identifier: stop.root).firstMatch
-            let seen = root.waitForExistence(timeout: 20)
+            let seen = root.waitForExistence(timeout: 10)
             if seen { usleep(1_200_000) }
             var tree = "error"
             do {

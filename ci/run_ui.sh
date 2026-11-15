@@ -34,7 +34,6 @@ while kill -0 $pid 2>/dev/null; do
   fi
 done
 kill $pid 2>/dev/null; sleep 1; kill -9 $pid 2>/dev/null
-grep "^AUDIT " $A/test.log > $A/audit.txt
 echo "TIMING test done at $(( $(date +%s) - JOB_T0 ))s"
 xcrun simctl shutdown "$SIM_UDID"
 true

@@ -65,10 +65,10 @@ jobs:
           echo "TIMING build done at $(( $(date +%s) - JOB_T0 ))s"
 
       - name: Simulator and stops
-        timeout-minutes: 6
+        timeout-minutes: 8
         run: |
           set +e
-          bash ci/run_ui.sh 510
+          bash ci/run_ui.sh 540
           true
 
       - name: Collect
@@ -78,7 +78,9 @@ jobs:
           set +e
           A=ci/artifacts; mkdir -p $A/stops $A/crash
           cp /tmp/audit-stops/* $A/stops/ 2>/dev/null
-          cp ~/Library/Logs/DiagnosticReports/*.ips $A/crash/ 2>/dev/null
+          grep "^AUDIT " $A/test.log > $A/audit.txt
+          APP=$(ls -d ci/*.xcodeproj | head -1); APP=$(basename "$APP" .xcodeproj)
+          cp ~/Library/Logs/DiagnosticReports/"$APP"*.ips $A/crash/ 2>/dev/null
           echo "TIMING total $(( $(date +%s) - JOB_T0 ))s" | tee -a $A/timing.txt
           true
 
