@@ -3,6 +3,6 @@ let auditStops: [(id: String, root: String)] = [
     (id: "silent", root: "fixture.silent"),
     (id: "offscreen", root: "fixture.offscreen"),
     (id: "scrolled", root: "fixture.scrolled"),
-    (id: "restless", root: "fixture.restless"),
+    (id: "frozen", root: "fixture.frozen"),
     (id: "ghost", root: "fixture.ghost"),
 ]

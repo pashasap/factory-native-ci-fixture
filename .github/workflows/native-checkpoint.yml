@@ -68,7 +68,8 @@ jobs:
         timeout-minutes: 13
         run: |
           set +e
-          bash ci/run_ui.sh 840
+          APP=$(ls -d ci/*.xcodeproj | head -1); APP=$(basename "$APP" .xcodeproj)
+          bash ci/run_ui.sh 840 "com.example.$APP"
           true
 
       - name: Collect

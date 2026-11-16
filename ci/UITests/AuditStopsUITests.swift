@@ -9,6 +9,7 @@ final class AuditStopsUITests: XCTestCase {
         try? FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
         XCUIDevice.shared.orientation = .portrait
         for stop in auditStops {
+            print("AUDIT begin \(stop.id)")
             let app = XCUIApplication()
             app.launchArguments = ["-auditStop", stop.id]
             app.launch()

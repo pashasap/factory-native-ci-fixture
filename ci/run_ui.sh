@@ -1,6 +1,7 @@
 #!/bin/bash
 set +e
 CUTOFF=$1
+BUNDLE=$2
 A=ci/artifacts; mkdir -p $A/stall /tmp/audit-stops
 XTR=$(ls ci/DD/Build/Products/*.xctestrun | head -1)
 xcrun simctl boot "$SIM_UDID"; xcrun simctl bootstatus "$SIM_UDID" -b > /dev/null
@@ -31,6 +32,13 @@ while kill -0 $pid 2>/dev/null; do
   if [ $same -eq 45 ]; then
     echo "OUTCOME no test output for 45 s at t=$i" | tee -a $A/outcome.txt
     xcrun simctl io "$SIM_UDID" screenshot $A/stall/t$i.png > /dev/null 2>&1
+    begun=$(grep "^AUDIT begin " $A/test.log | tail -1 | cut -d" " -f3)
+    if [ -n "$begun" ] && ! grep -q "^AUDIT stop $begun " $A/test.log; then
+      echo "$begun" >> $A/killed.txt
+      echo "OUTCOME stop $begun did not respond for 45 s; the app was stopped" | tee -a $A/outcome.txt
+      xcrun simctl terminate "$SIM_UDID" "$BUNDLE" > /dev/null 2>&1
+      same=0
+    fi
   fi
 done
 kill $pid 2>/dev/null; sleep 1; kill -9 $pid 2>/dev/null
