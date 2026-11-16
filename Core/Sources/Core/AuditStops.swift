@@ -22,6 +22,7 @@ public enum AuditStops {
         AuditStop(id: "silent", root: "fixture.silent", title: "A button with no spoken label", expectation: "One star button.", flows: [], defects: ["F-000001"]),
         AuditStop(id: "offscreen", root: "fixture.offscreen", title: "A button pushed past the right edge", expectation: "One button fully on screen.", flows: [], defects: []),
         AuditStop(id: "scrolled", root: "fixture.scrolled", title: "A long list", expectation: "A list of twenty rows that scrolls.", flows: ["F-02"], defects: []),
+        AuditStop(id: "restless", root: "fixture.restless", title: "A screen that never stops moving", expectation: "One button and a circle.", flows: [], defects: []),
         AuditStop(id: "ghost", root: "fixture.ghost", title: "A stop the app does not open", expectation: "Never shown.", flows: [], defects: []),
     ]
 }
