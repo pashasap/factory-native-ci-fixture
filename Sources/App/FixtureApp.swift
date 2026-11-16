@@ -1,4 +1,5 @@
 import Core
+import Foundation
 import SwiftUI
 
 @main
@@ -38,30 +39,13 @@ struct StopView: View {
                 }
             }
             .accessibilityIdentifier("fixture.scrolled")
-        case "restless":
-            RestlessView()
-                .accessibilityIdentifier("fixture.restless")
+        case "frozen":
+            Text("Frozen")
+                .accessibilityIdentifier("fixture.frozen")
+                .onAppear { Thread.sleep(forTimeInterval: 900) }
         default:
             Text("No stop \(AuditStops.all.count)")
                 .accessibilityIdentifier("fixture.none")
-        }
-    }
-}
-
-struct RestlessView: View {
-    @State private var grown = false
-
-    var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.2)) { context in
-            VStack(spacing: 24) {
-                Button("Tick \(Int(context.date.timeIntervalSince1970 * 5) % 1000)") {}
-                Circle()
-                    .frame(width: 40, height: 40)
-                    .scaleEffect(grown ? 1.4 : 0.6)
-            }
-        }
-        .onAppear {
-            withAnimation(.linear(duration: 0.5).repeatForever()) { grown = true }
         }
     }
 }
