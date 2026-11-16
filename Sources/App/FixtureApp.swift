@@ -13,6 +13,27 @@ struct FixtureApp: App {
     }
 }
 
+/// The screen a locked level falls back to when saved progress is ignored.
+struct TrailView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            Button("Level one") {}
+            Button("Level two") {}
+            Button("Settings") {}
+        }
+    }
+}
+
+struct SheetView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            Text("A sheet").accessibilityIdentifier("fixture.sheet")
+            Button("Close sheet") {}
+        }
+        .padding()
+    }
+}
+
 struct StopView: View {
     let stop: String
 
@@ -43,6 +64,19 @@ struct StopView: View {
             Text("Frozen")
                 .accessibilityIdentifier("fixture.frozen")
                 .onAppear { Thread.sleep(forTimeInterval: 900) }
+        case "sheet":
+            Text("Behind the sheet")
+                .sheet(isPresented: .constant(true)) { SheetView() }
+        case "locked":
+            // the stop tries to open a locked level, the audit launch does not unlock it, and the app shows the trail:
+            // the root identifier sits on the outer wrapper, so the root check passes on the wrong screen
+            TrailView()
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("fixture.locked")
+        case "trail":
+            TrailView()
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("fixture.trail")
         default:
             Text("No stop \(AuditStops.all.count)")
                 .accessibilityIdentifier("fixture.none")

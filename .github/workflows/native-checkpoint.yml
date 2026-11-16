@@ -68,8 +68,7 @@ jobs:
         timeout-minutes: 13
         run: |
           set +e
-          APP=$(ls -d ci/*.xcodeproj | head -1); APP=$(basename "$APP" .xcodeproj)
-          bash ci/run_ui.sh 840 "com.example.$APP"
+          bash ci/run_ui.sh 840
           true
 
       - name: Collect
@@ -79,6 +78,7 @@ jobs:
           set +e
           A=ci/artifacts; mkdir -p $A/stops $A/crash
           cp /tmp/audit-stops/* $A/stops/ 2>/dev/null
+          bash ci/collect_timeouts.sh
           grep "^AUDIT " $A/test.log > $A/audit.txt
           APP=$(ls -d ci/*.xcodeproj | head -1); APP=$(basename "$APP" .xcodeproj)
           cp ~/Library/Logs/DiagnosticReports/"$APP"*.ips $A/crash/ 2>/dev/null
