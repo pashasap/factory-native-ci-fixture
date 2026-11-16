@@ -26,6 +26,8 @@ public enum AuditStops {
         AuditStop(id: "sheet", root: "fixture.sheet", title: "A sheet with its root inside", expectation: "A sheet that says A sheet, with a Close sheet button.", flows: [], defects: []),
         AuditStop(id: "locked", root: "fixture.locked", title: "A locked level that falls back to the trail", expectation: "The locked level, not the trail.", flows: [], defects: []),
         AuditStop(id: "trail", root: "fixture.trail", title: "The trail screen", expectation: "Three buttons: Level one, Level two, Settings.", flows: [], defects: []),
+        AuditStop(id: "home", root: "fixture.home", title: "The home screen, root on its title", expectation: "The word Home above two level buttons and Settings.", flows: [], defects: []),
+        AuditStop(id: "home-locked", root: "fixture.home-locked", title: "A locked level that falls back to the home screen", expectation: "The locked level, not the home screen.", flows: [], defects: []),
         AuditStop(id: "ghost", root: "fixture.ghost", title: "A stop the app does not open", expectation: "Never shown.", flows: [], defects: []),
     ]
 }

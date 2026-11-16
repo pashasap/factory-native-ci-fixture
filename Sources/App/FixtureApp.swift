@@ -24,6 +24,18 @@ struct TrailView: View {
     }
 }
 
+/// A screen whose `root` identifier sits on the view that renders it (on its title), as the conventions ask.
+struct HomeView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            Text("Home").accessibilityIdentifier("fixture.home")
+            Button("Home level one") {}
+            Button("Home level two") {}
+            Button("Home settings") {}
+        }
+    }
+}
+
 struct SheetView: View {
     var body: some View {
         VStack(spacing: 24) {
@@ -77,6 +89,14 @@ struct StopView: View {
             TrailView()
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("fixture.trail")
+        case "home":
+            HomeView()
+        case "home-locked":
+            // tries to open a locked level and falls back to the home screen: the fallback carries the home screen's
+            // own root, so the home stop is right and this one is the wrong one
+            HomeView()
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("fixture.home-locked")
         default:
             Text("No stop \(AuditStops.all.count)")
                 .accessibilityIdentifier("fixture.none")
