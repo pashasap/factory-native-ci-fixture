@@ -13,7 +13,7 @@ if [ -d $R ]; then
   mkdir -p $A/xcresult-attachments $A/xcresult-diagnostics
   xcrun xcresulttool export attachments --path $R --output-path $A/xcresult-attachments > $A/xcresult-export.log 2>&1
   xcrun xcresulttool export diagnostics --path $R --output-path $A/xcresult-diagnostics >> $A/xcresult-export.log 2>&1
-  python3 ci/spindumps.py $A/spindumps $A/timed_out.txt $A/xcresult-attachments $A/xcresult-diagnostics > $A/spindumps/index.log 2>&1
+  python3 ci/spindumps.py $A/spindumps $A/timed_out.txt $A/xcresult-attachments $A/xcresult-diagnostics $R > $A/spindumps/index.log 2>&1
   # the first runs of a new harness keep the whole bundle (small: a few screenshots), so a parse that missed can be redone
   ditto -c -k --keepParent $R $A/result.xcresult.zip 2>/dev/null
   [ "$(stat -f %z $A/result.xcresult.zip 2>/dev/null || echo 0)" -gt 100000000 ] && rm -f $A/result.xcresult.zip

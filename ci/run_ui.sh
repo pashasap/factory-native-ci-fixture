@@ -33,7 +33,8 @@ while kill -0 $pid 2>/dev/null; do
   fi
   # every stop is its own test: the run is over when the whole selection is reported, not when one test is
   if [ $done_at -eq 0 ] && grep -qE "^Test Suite 'Selected tests' (passed|failed)" $A/test.log; then done_at=$i; fi
-  if [ $done_at -gt 0 ] && [ $((i - done_at)) -ge 20 ]; then break; fi
+  # then xcodebuild finalizes the result bundle (a killed one leaves it without Info.plist and the spindump unreadable)
+  if [ $done_at -gt 0 ] && [ $((i - done_at)) -ge 45 ]; then break; fi
   cur=$(wc -l < $A/test.log)
   if [ "$cur" = "$last" ]; then same=$((same+1)); else same=0; last=$cur; fi
   if [ $same -eq 45 ]; then
