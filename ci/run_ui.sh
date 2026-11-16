@@ -9,9 +9,9 @@
 #   $2 = cutoff once a timeout was seen (the spindump and the runner restart cost 90 to 130 s). Collect then also
 #        exports from a finalized bundle and zips it (about 60 s): all inside 1200 s.
 # The cutoff stays a last resort; it asks xcodebuild to stop (SIGTERM, which it answers with `BUILD INTERRUPTED`) and
-# waits up to FINALIZE_S for it to finalize the result bundle.
+# waits up to FINALIZE_S for it to finalize the result bundle (FINALIZE_TIMEOUT_S after the last test when one timed out).
 set +e
-CUTOFF=$1; EXTENDED=${2:-$1}; FINALIZE_S=${FINALIZE_S:-25}
+CUTOFF=$1; EXTENDED=${2:-$1}; FINALIZE_S=${FINALIZE_S:-25}; FINALIZE_TIMEOUT_S=${FINALIZE_TIMEOUT_S:-90}
 STALL_S=${STALL_S:-45}; QUIET_S=${QUIET_S:-200}  # the notice below; the quiet window after a timeout (the spindump)
 A=ci/artifacts; mkdir -p $A/stall /tmp/audit-stops
 XTR=$(ls ci/DD/Build/Products/*.xctestrun | head -1)
@@ -48,8 +48,11 @@ while kill -0 $pid 2>/dev/null; do
   fi
   # every stop is its own test: the run is over when the whole selection is reported, not when one test is
   if [ $done_at -eq 0 ] && grep -qE "^Test Suite 'Selected tests' (passed|failed)" $A/test.log; then done_at=$i; fi
-  # then xcodebuild finalizes the result bundle and exits by itself; give it time, then stop waiting
-  if [ $done_at -gt 0 ] && [ $((i - done_at)) -ge $FINALIZE_S ]; then break; fi
+  # then xcodebuild finalizes the result bundle and exits by itself; give it time, then stop waiting. After a timeout it
+  # collects diagnostics first (it was still busy 36 s after the last test in public run 43831317133): wait longer, the
+  # extended cutoff still bounds this loop
+  wait_s=$FINALIZE_S; [ $timeout_at -gt 0 ] && wait_s=$FINALIZE_TIMEOUT_S
+  if [ $done_at -gt 0 ] && [ $((i - done_at)) -ge $wait_s ]; then break; fi
   cur=$(wc -l < $A/test.log)
   if [ "$cur" = "$last" ]; then same=$((same+1)); else same=0; last=$cur; fi
   # no output for 45 s is a stall, except while XCTest collects the spindump of a timed-out test (up to ~200 s of quiet)
