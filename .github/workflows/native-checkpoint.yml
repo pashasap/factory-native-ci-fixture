@@ -28,7 +28,7 @@ jobs:
           echo "JOB_T0=$(date +%s)" >> "$GITHUB_ENV"
           ( mkdir -p "$RUNNER_TEMP/xg" && curl -fsSL -o "$RUNNER_TEMP/xg/x.zip" https://github.com/yonaskolb/XcodeGen/releases/download/2.46.0/xcodegen.zip \
             && unzip -q -o "$RUNNER_TEMP/xg/x.zip" -d "$RUNNER_TEMP/xg" && touch "$RUNNER_TEMP/xg/ok" ) > "$RUNNER_TEMP/xg.log" 2>&1 &
-          XC=$(ls -d /Applications/Xcode_*.app | python3 -c "import sys,re; xs=[l.strip() for l in sys.stdin]; print(max(xs,key=lambda x:[int(n) for n in re.findall(r'\\d+',x.split('Xcode_')[1])]))")
+          XC=$(ls -d /Applications/Xcode_*.app | python3 -c "import sys,re; xs=[l.strip() for l in sys.stdin]; xs=[x for x in xs if 'beta' not in x.lower()] or xs; print(max(xs,key=lambda x:[int(n) for n in re.findall(r'\\d+',x.split('Xcode_')[1])]))")
           sudo xcode-select -s "$XC/Contents/Developer"
           INFO=$(python3 ci/pick_device.py)
           IFS='|' read -r UDID NAME RT <<< "$INFO"

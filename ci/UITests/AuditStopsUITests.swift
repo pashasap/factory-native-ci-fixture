@@ -1,7 +1,35 @@
 import XCTest
 
+// XCUITest waits, with no public limit, for the app to become idle before every query. An app that never becomes idle
+// would cost minutes per stop and starve the stops after it, so the wait is switched off in this test bundle only.
+private let quiescenceOff: Void = {
+    guard let cls = NSClassFromString("XCUIApplicationProcess") else { print("AUDIT quiescence class missing"); return }
+    var count: UInt32 = 0
+    guard let methods = class_copyMethodList(cls, &count) else { return }
+    var names: [String] = []
+    for i in 0..<Int(count) {
+        let name = NSStringFromSelector(method_getName(methods[i]))
+        guard name.hasPrefix("waitForQuiescenceIncludingAnimationsIdle") else { continue }
+        let colons = name.filter { $0 == ":" }.count
+        if colons == 1 {
+            let block: @convention(block) (AnyObject, Bool) -> Void = { _, _ in }
+            method_setImplementation(methods[i], imp_implementationWithBlock(block))
+            names.append(name)
+        } else if colons == 2 {
+            let block: @convention(block) (AnyObject, Bool, Bool) -> Void = { _, _, _ in }
+            method_setImplementation(methods[i], imp_implementationWithBlock(block))
+            names.append(name)
+        }
+    }
+    free(methods)
+    print("AUDIT quiescence off \(names)")
+}()
+
 final class AuditStopsUITests: XCTestCase {
-    override func setUpWithError() throws { continueAfterFailure = true }
+    override func setUpWithError() throws {
+        continueAfterFailure = true
+        _ = quiescenceOff
+    }
 
     @MainActor
     func testStops() throws {
